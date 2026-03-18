@@ -39,9 +39,6 @@ app.use((req, res, next) => {
 });
 
 // Test route
-app.get("/", (req, res) => {
-  res.send("Backend + Contact API running 🚀");
-});
 
 app.get("/", (req, res) => {
   res.send("🚀 GIO Contact Backend is running");
