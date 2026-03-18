@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Messages</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f9;
+  margin: 0;
+}
+
+header {
+  background: #1f2d3d;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 40px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+h2 {
+  margin-top: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  font-size: 14px;
+}
+
+th {
+  background: #f1f3f5;
+}
+
+tr:hover {
+  background: #fafafa;
+}
+
+.status-new {
+  color: #e67e22;
+  font-weight: bold;
+}
+
+button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-btn {
+  background: #e74c3c;
+  color: white;
+}
+
+.delete-btn:hover {
+  background: #c0392b;
+}
+
+.loading {
+  text-align: center;
+  padding: 30px;
+  font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  📬 Sponsors Contact Messages Dashboard
+</header>
+
+<div class="container">
+
+  <h2>All Submissions</h2>
+
+  <div id="loading" class="loading">Loading messages...</div>
+
+  <table id="table" style="display:none;">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Message</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+</div>
+
+<script>
+    const token = localStorage.getItem("adminToken");
+
+if (!token) {
+  window.location.href = "admin-login.html";
+}
+const API_BASE =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://your-backend.onrender.com"; // change after deployment
+
+async function loadSubmissions() {
+  try {
+    const res = await fetch(`${API_BASE}/api/admin/submissions`, {
+  headers: {
+    Authorization: token
+  }
+});
+    const data = await res.json();
+
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("table").style.display = "table";
+
+    renderTable(data.submissions || []);
+
+  } catch (err) {
+    document.getElementById("loading").innerText =
+      "Failed to load messages";
+  }
+}
+
+function renderTable(submissions) {
+  const tbody = document.querySelector("#table tbody");
+  tbody.innerHTML = "";
+
+  if (submissions.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='7'>No messages found</td></tr>";
+    return;
+  }
+
+  submissions.forEach(sub => {
+
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${sub.name || "N/A"}</td>
+      <td>${sub.email || "N/A"}</td>
+      <td>${sub.phone || "N/A"}</td>
+      <td>${sub.message || "No message"}</td>
+      <td class="status-new">${sub.status || "new"}</td>
+      <td>${new Date(sub.createdAt).toLocaleString()}</td>
+      <td>
+        <button class="delete-btn"
+          onclick="deleteMessage('${sub._id}')">
+          Delete
+        </button>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+async function deleteMessage(id) {
+  if (!confirm("Delete this message permanently?")) return;
+
+  await fetch(`${API_BASE}/api/admin/submissions/${id}`, {
+    method: "DELETE",
+    headers: {
+        Authorization: token
+    }
+  });
+
+  loadSubmissions();
+}
+
+loadSubmissions();
+</script>
+
+</body>
+</html>

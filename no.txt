@@ -1,0 +1,4 @@
+DcsQVdGBNFGZQX1k
+johnodey335_db_user
+
+mongodb+srv://johnodey335_db_user:DcsQVdGBNFGZQX1k@cluster0.uhlczmq.mongodb.net/?appName=Cluster0
