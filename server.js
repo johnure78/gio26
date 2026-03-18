@@ -19,7 +19,7 @@ connectDB();
 app.use(express.json());
 
 //cors
-app.use(cors());
+app.use(cors({origin:"*", credentials:true}));
 
 app.use('/api/admin', adminRoutes);
 
