@@ -2,7 +2,7 @@ const Admin = require("../models/Admin");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-exports.loginAdmin = async (req, res) => {
+const loginAdmin = async (req, res) => {
   const { username, password } = req.body;
 
   const admin = await Admin.findOne({ username });
@@ -21,3 +21,4 @@ exports.loginAdmin = async (req, res) => {
 
   res.json({ token });
 };
+module.exports={ loginAdmin };
