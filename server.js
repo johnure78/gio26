@@ -43,6 +43,9 @@ app.get("/", (req, res) => {
   res.send("Backend + Contact API running 🚀");
 });
 
+app.get("/", (req, res) => {
+  res.send("🚀 GIO Contact Backend is running");
+});
 
 const PORT = process.env.PORT || 5000;
 
