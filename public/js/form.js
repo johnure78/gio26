@@ -28,9 +28,14 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     console.log("Submitting:", data);
+    const API_URL = window.location.hostname === 'localhost'
+          ?
+    'http://localhost:5000/api/contact'
+          :
+    'https://https://gio26-production.up.railway.app/api/contact';
 
     try {
-      const response = await fetch("https://gio26-production.up.railway.app/api/contact", {
+      const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
