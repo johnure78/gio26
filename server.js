@@ -31,7 +31,7 @@ app.use("/api/auth", authRoutes);
 app.use(express.static(path.join(__dirname, "public")));
 
 // Contact API
-app.use("/", contactRoutes);
+app.use("/api/contact", contactRoutes);
 
 // Serve frontend SPA
 app.use((req, res, next) => {

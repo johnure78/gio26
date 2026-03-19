@@ -4,7 +4,7 @@ const router = express.Router();
 const { submitForm } = require("../controllers/contactController");
 const { validateContact } = require("../middleware/validator");
 
-router.post("/api/contact", validateContact, submitForm);
+router.post("/", validateContact, submitForm);
 
 router.get("/", (req, res) => {
   res.send("Contact API is working 🚀");
