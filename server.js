@@ -17,6 +17,7 @@ connectDB();
 
 // Body parser
 app.use(express.json());
+app.use(express.urlencoded({ extended: true}))
 
 //cors
 app.use(cors({origin:"*"}));
@@ -30,7 +31,7 @@ app.use("/api/auth", authRoutes);
 app.use(express.static(path.join(__dirname, "public")));
 
 // Contact API
-app.use("/api/contact", contactRoutes);
+app.use("/", contactRoutes);
 
 // Serve frontend SPA
 app.use((req, res, next) => {
