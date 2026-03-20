@@ -18,10 +18,10 @@ exports.submitForm = async (req, res) => {
 
     // Send to admin (YOU)
     const adminResult = await sendMail({
-      from: `"Website Contact" <${process.env.FROM_EMAIL || 'onboarding@resend.dev'}>`,
+      from: `"GIO Sponsor Application" <${process.env.FROM_EMAIL || 'onboarding@resend.dev'}>`,
       to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
       replyTo: email,
-      subject: `New Contact from ${name}`,
+      subject: `New Sponsor APP from ${name}`,
       text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\nMessage: ${message}`
     });
     console.log("✅ Admin email sent:", adminResult.id);

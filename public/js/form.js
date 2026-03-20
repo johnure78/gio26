@@ -28,14 +28,13 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     console.log("Submitting:", data);
+    
     const API_URL = window.location.hostname === 'localhost'
-          ?
-    'http://localhost:5000/api/contact'
-          :
-    'https://gio26.onrender.com/api/contact';
+      ? 'http://localhost:5000/api/contact'
+      : 'https://gio26.onrender.com/api/contact';
 
     try {
-      const response = await fetch( API_URL, {
+      const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -45,12 +44,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (formAlert) {
         formAlert.style.display = "block";
-        formAlert.style.background = "#D1FAE5";
-        formAlert.style.color = "#065F46";
-        formAlert.textContent = result.message || "Success!";
+        
+        if (result.success) {
+          // ⭐ UPDATED: Show personalized success message with user's email
+          formAlert.style.background = "#D1FAE5";
+          formAlert.style.color = "#065F46";
+          formAlert.textContent = "Thank you " + data.name + "! Your message has been sent. We will contact you soon at " + data.email;
+        } else {
+          // Error from server
+          formAlert.style.background = "#FEE2E2";
+          formAlert.style.color = "#991B1B";
+          formAlert.textContent = result.message || "Submission failed.";
+        }
       }
 
-      form.reset();
+      if (result.success) {
+        form.reset();
+      }
 
     } catch (error) {
       console.error(error);
@@ -59,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formAlert.style.display = "block";
         formAlert.style.background = "#FEE2E2";
         formAlert.style.color = "#991B1B";
-        formAlert.textContent = "Submission failed.";
+        formAlert.textContent = "Submission failed. Please try again later.";
       }
 
     } finally {
