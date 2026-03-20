@@ -47,17 +47,16 @@ button {
 </div>
 
 <script>
-
 const API =
   window.location.hostname === "localhost"
     ? "http://localhost:5000"
-    : "https://gio26.onrender.com/api/admin/login";
+    : "https://gio26.onrender.com";  // ⭐ FIXED: Removed /api/admin/login and trailing space
 
 async function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
 
-  const res = await fetch(`${API}/api/auth/login`, {
+  const res = await fetch(`${API}/api/auth/login`, {  // ⭐ CORRECT endpoint
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({ username, password })
@@ -69,7 +68,7 @@ async function login() {
     localStorage.setItem("adminToken", data.token);
     window.location.href = "admin.html";
   } else {
-    document.getElementById("error").innerText = data.message;
+    document.getElementById("error").innerText = data.message || "Login failed";
   }
 }
 </script>
