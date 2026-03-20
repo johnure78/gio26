@@ -1,22 +1,26 @@
-const nodemailer = require("nodemailer");
-
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure:false,
-   // You can also use Outlook, Yahoo, or SMTP
+  host: process.env.EMAIL_HOST,
+  port: parseInt(process.env.EMAIL_PORT) || 587,
+  secure: process.env.EMAIL_SECURE === 'true',
   auth: {
-    user: process.env.EMAIL_USER, // Your Gmail address
-    pass: process.env.EMAIL_PASS, // App password (NOT your Gmail login)
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
+  // 🔧 ADD THESE SETTINGS FOR RAILWAY COMPATIBILITY:
+  tls: {
+    rejectUnauthorized: false,  // Bypass SSL certificate issues
+    ciphers: 'SSLv3'
+  },
+  connectionTimeout: 10000,     // 10 seconds (prevents hanging)
+  greetingTimeout: 10000,
+  socketTimeout: 10000
 });
 
-transporter.verify((error, success) => {
+// Verify connection on startup (catches errors early)
+transporter.verify(function(error, success) {
   if (error) {
-    console.error("Email configuration error ❌", error);
+    console.error('Email configuration error ❌', error);
   } else {
-    console.log("Email transporter ready ✅");
+    console.log('Email server ready ✅');
   }
 });
-
-module.exports = transporter;
