@@ -91,8 +91,8 @@ button {
 </header>
 
 <div class="container">
-
-  <h2>All Submissions</h2>
+<h2>All Submissions</h2>
+<button onclick="logout()" style="float:right; background:#e74c3c; color:white; padding:8px 16px; border:none; border-radius:4px; cursor:pointer;">Logout</button>
 
   <div id="loading" class="loading">Loading messages...</div>
 
@@ -114,13 +114,18 @@ button {
 </div>
 
 <script>
+// ⭐ PROTECTION: Check token IMMEDIATELY before anything else
 const token = localStorage.getItem("adminToken");
 
-if (!token) {
-  window.location.href = "admin-login.html";
+if (!token || token === "null" || token === "undefined") {
+  // No token found, redirect to login immediately
+  window.location.replace("admin-login.html");
+  throw new Error("No token - redirecting to login"); // Stop script execution
 }
 
-// Clean base URL
+// Token exists, proceed with loading
+console.log("Token found, loading admin panel...");
+
 const API_BASE =
   window.location.hostname === "localhost"
     ? "http://localhost:5000"
@@ -128,12 +133,18 @@ const API_BASE =
 
 async function loadSubmissions() {
   try {
-    // ⭐ FIXED: Authorization header without "Bearer "
     const res = await fetch(`${API_BASE}/api/admin/submissions`, {
       headers: {
         Authorization: token
       }
     });
+    
+    // ⭐ Handle 401 (unauthorized) - token expired or invalid
+    if (res.status === 401) {
+      localStorage.removeItem("adminToken"); // Clear bad token
+      window.location.replace("admin-login.html");
+      return;
+    }
     
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
@@ -143,7 +154,6 @@ async function loadSubmissions() {
 
     document.getElementById("loading").style.display = "none";
     document.getElementById("table").style.display = "table";
-
     renderTable(data.submissions || []);
 
   } catch (err) {
@@ -163,7 +173,6 @@ function renderTable(submissions) {
 
   submissions.forEach(sub => {
     const tr = document.createElement("tr");
-
     tr.innerHTML = `
       <td>${sub.name || "N/A"}</td>
       <td>${sub.email || "N/A"}</td>
@@ -172,12 +181,9 @@ function renderTable(submissions) {
       <td class="status-new">${sub.status || "new"}</td>
       <td>${new Date(sub.createdAt).toLocaleString()}</td>
       <td>
-        <button class="delete-btn" onclick="deleteMessage('${sub._id}')">
-          Delete
-        </button>
+        <button class="delete-btn" onclick="deleteMessage('${sub._id}')">Delete</button>
       </td>
     `;
-
     tbody.appendChild(tr);
   });
 }
@@ -186,13 +192,18 @@ async function deleteMessage(id) {
   if (!confirm("Delete this message permanently?")) return;
 
   try {
-    // ⭐ FIXED: Authorization header without "Bearer "
     const res = await fetch(`${API_BASE}/api/admin/submissions/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: token
       }
     });
+    
+    if (res.status === 401) {
+      localStorage.removeItem("adminToken");
+      window.location.replace("admin-login.html");
+      return;
+    }
     
     if (!res.ok) {
       throw new Error(`Delete failed: ${res.status}`);
@@ -205,6 +216,13 @@ async function deleteMessage(id) {
   }
 }
 
+// ⭐ ADD LOGOUT FUNCTION
+function logout() {
+  localStorage.removeItem("adminToken");
+  window.location.replace("admin-login.html");
+}
+
+// Load data
 loadSubmissions();
 </script>
 
