@@ -1,35 +1,18 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require('resend');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Create transporter with IPv4 forced
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  family: 4, // ⭐ CRITICAL: Force IPv4
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false
-  },
-  debug: true,
-  logger: true
-});
-
-// Async verification - log but don't crash
-const verifyEmail = async () => {
-  try {
-    await transporter.verify();
-    console.log('✅ Email server ready - SMTP connection verified');
-  } catch (error) {
-    console.error('❌ Email verification failed:', error.message);
-    console.error('Error code:', error.code, 'Syscall:', error.syscall);
-    // Don't exit - let it retry on actual send
-  }
+// Simple send function
+const sendMail = async ({ from, to, subject, text, html, replyTo }) => {
+  return await resend.emails.send({
+    from: from || process.env.FROM_EMAIL || 'onboarding@resend.dev',
+    to: to,
+    subject: subject,
+    text: text,
+    html: html,
+    reply_to: replyTo
+  });
 };
 
-// Run after short delay to ensure env vars loaded
-setTimeout(verifyEmail, 1000);
+console.log('📧 Resend email configured');
 
-module.exports = transporter;
+module.exports = { sendMail };

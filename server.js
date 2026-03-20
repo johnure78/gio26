@@ -37,19 +37,18 @@ app.get("/api/debug", (req, res) => {
 });
 
 app.get("/api/test-email", async (req, res) => {
-  if (!transporter || !transporter.verify) {
-    return res.status(500).json({ error: "Transporter not ready" });
-  }
+  const { sendMail } = require("./config/email");
   try {
-    await transporter.verify();
-    res.json({ status: "Email OK" });
-  } catch (err) {
-    res.status(500).json({ 
-      error: err.message,
-      code: err.code,
-      address: err.address,
-      port: err.port
+    // Just verify API key is working
+    await sendMail({
+      from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
+      to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
+      subject: "Test Email",
+      text: "This is a test from Resend"
     });
+    res.json({ status: "OK", service: "Resend" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
