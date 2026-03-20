@@ -20,79 +20,57 @@ app.use(express.urlencoded({ extended: true }));
 // CORS
 app.use(cors({ origin: "*" }));
 
-// ⭐ ADD: Import email config and verify (minimal addition)
-let transporter;
-try {
-  const emailModule = require("./config/email");
-  transporter = emailModule.transporter || emailModule;
-  
-  console.log("📧 Loading email configuration...");
-  
-  // Verify email config on startup
-  transporter.verify((error, success) => {
-    if (error) {
-      console.error("❌ Email verification FAILED:", error.message);
-    } else {
-      console.log("✅ Email server ready - SMTP connection verified");
-    }
-  });
-} catch (err) {
-  console.error("❌ Failed to load email config:", err.message);
-}
+// ⭐ Load email config ONCE (self-initializes)
+const transporter = require("./config/email");
 
-// Routes
-app.use('/api/admin', adminRoutes);
-app.use("/api/auth", authRoutes);
-
-// ⭐ ADD: Debug routes to check email status (minimal addition)
+// Debug routes
 app.get("/api/debug", (req, res) => {
   res.json({
-    emailConfigured: !!transporter,
-    envVars: {
-      EMAIL_HOST: process.env.EMAIL_HOST,
-      EMAIL_PORT: process.env.EMAIL_PORT,
-      EMAIL_USER: process.env.EMAIL_USER ? "✅ Set" : "❌ Missing",
-      EMAIL_PASS: process.env.EMAIL_PASS ? "✅ Set" : "❌ Missing",
-      RECIPIENT_EMAIL: process.env.RECIPIENT_EMAIL ? "✅ Set" : "❌ Missing"
+    emailLoaded: !!transporter,
+    hasSendMail: transporter && typeof transporter.sendMail === 'function',
+    env: {
+      EMAIL_USER: process.env.EMAIL_USER ? "✅" : "❌",
+      EMAIL_PASS: process.env.EMAIL_PASS ? "✅" : "❌",
+      RECIPIENT_EMAIL: process.env.RECIPIENT_EMAIL ? "✅" : "❌"
     }
   });
 });
 
 app.get("/api/test-email", async (req, res) => {
-  if (!transporter) {
-    return res.status(500).json({ error: "Transporter not loaded" });
+  if (!transporter || !transporter.verify) {
+    return res.status(500).json({ error: "Transporter not ready" });
   }
   try {
     await transporter.verify();
-    res.json({ status: "Email OK", message: "SMTP connection verified" });
+    res.json({ status: "Email OK" });
   } catch (err) {
     res.status(500).json({ 
       error: err.message,
       code: err.code,
-      command: err.command 
+      address: err.address,
+      port: err.port
     });
   }
 });
 
-// Serve static frontend
-app.use(express.static(path.join(__dirname, "public")));
-
-// Contact API
+// Routes
+app.use('/api/admin', adminRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/contact", contactRoutes);
 
-// Serve frontend SPA
+// Static files
+app.use(express.static(path.join(__dirname, "public")));
+
+// SPA fallback
 app.use((req, res, next) => {
   if (req.path.startsWith("/api")) return next();
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Test route
+// Health check
 app.get("/", (req, res) => {
-  res.send("🚀 GIO Contact Backend is running");
+  res.send("🚀 GIO Backend running");
 });
 
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () =>
-  console.log(`Server running on port ${PORT}`)
-);
+app.listen(PORT, () => console.log(`Server on port ${PORT}`));
