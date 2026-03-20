@@ -1,3 +1,5 @@
+const nodemailer = require("nodemailer");
+
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: parseInt(process.env.EMAIL_PORT),
@@ -24,3 +26,5 @@ transporter.verify(function(error, success) {
     console.log('Email server ready ✅');
   }
 });
+
+module.exports = transporter;
