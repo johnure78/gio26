@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
           ?
     'http://localhost:5000/api/contact'
           :
-    'https://https://gio26-production.up.railway.app/api/contact';
+    'https://gio26.onrender.com/api/contact';
 
     try {
       const response = await fetch( API_URL, {
