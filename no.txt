@@ -2,3 +2,12 @@ DcsQVdGBNFGZQX1k
 johnodey335_db_user
 
 mongodb+srv://johnodey335_db_user:DcsQVdGBNFGZQX1k@cluster0.uhlczmq.mongodb.net/?appName=Cluster0
+
+git remote add origin https://github.com/johnure78/gio26
+git branch -M main
+git push -u origin main
+
+gio26-production.up.railway.app
+T28MA65JYZ718RM5FKFPT324
+
+re_ULVUkint_Es8yMwBjeVH2bLyrsLgjVAPn
