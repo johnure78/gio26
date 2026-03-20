@@ -23,7 +23,7 @@ app.use(cors({ origin: "*" }));
 // ⭐ ADD: Import email config and verify (minimal addition)
 let transporter;
 try {
-  const emailModule = require("./emailConfig");
+  const emailModule = require("./config/email");
   transporter = emailModule.transporter || emailModule;
   
   console.log("📧 Loading email configuration...");
