@@ -7,7 +7,7 @@ const connectDB = require("./config/database");
 const adminRoutes = require('./routes/adminroutes');
 const authRoutes = require("./routes/authRoutes");
 
-const transporter = require('./emailConfig');
+const transporter = require('./config/email');
 
 const contactRoutes = require("./routes/contact");
 
