@@ -1,30 +1,28 @@
 const nodemailer = require("nodemailer");
+const dns = require("dns");
+
+// Force IPv4 for all DNS lookups in this process
+dns.setDefaultResultOrder('ipv4first');
 
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: parseInt(process.env.EMAIL_PORT),
+  host: "142.250.102.108", // Gmail SMTP IPv4 address (forces IPv4)
+  port: parseInt(process.env.EMAIL_PORT) || 587,
   secure: process.env.EMAIL_SECURE === 'true',
-  family: 4,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  // 🔧 ADD THESE SETTINGS FOR RAILWAY COMPATIBILITY:
   tls: {
-    rejectUnauthorized: false,  // Bypass SSL certificate issues
-    ciphers: 'SSLv3'
-  },
-  connectionTimeout: 10000,     // 10 seconds (prevents hanging)
-  greetingTimeout: 10000,
-  socketTimeout: 10000
+    rejectUnauthorized: false, // Needed when using IP instead of hostname
+    servername: 'smtp.gmail.com' // Required for certificate validation
+  }
 });
 
-// Verify connection on startup (catches errors early)
-transporter.verify(function(error, success) {
+transporter.verify((error, success) => {
   if (error) {
-    console.error('Email configuration error ❌', error);
+    console.error('Email error ❌', error);
   } else {
-    console.log('Email server ready ✅');
+    console.log('Email ready ✅');
   }
 });
 
