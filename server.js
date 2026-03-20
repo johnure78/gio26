@@ -41,6 +41,15 @@ app.use((req, res, next) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+// ⭐ FORCE LOAD EMAIL CONFIG WITH ERROR HANDLING
+let transporter;
+try {
+  const emailConfig = require('./config/email');
+  transporter = emailConfig.transporter || emailConfig;
+  console.log('Email module loaded ✅');
+} catch (err) {
+  console.error('Failed to load email config ❌', err.message);
+}
 // Test route
 
 app.get("/", (req, res) => {
