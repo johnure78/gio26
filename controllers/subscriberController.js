@@ -23,3 +23,12 @@ exports.subscribe = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+exports.getSubscribers = async (req, res) => {
+  try {
+    const subscribers = await Subscriber.find().sort({ subscribedAt: -1 });
+    res.status(200).json(subscribers);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
