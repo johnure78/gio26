@@ -7,6 +7,7 @@ const connectDB = require("./config/database");
 const adminRoutes = require('./routes/adminroutes');
 const authRoutes = require("./routes/authRoutes");
 const contactRoutes = require("./routes/contact");
+const subscriberRoutes = require("./routes/subscriberRoutes");
 
 const app = express();
 
@@ -52,6 +53,8 @@ app.get("/api/test-email", async (req, res) => {
   }
 });
 
+
+app.use("/api/newsletter", subscriberRoutes);
 // Routes
 app.use('/api/admin', adminRoutes);
 app.use("/api/auth", authRoutes);

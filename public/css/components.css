@@ -430,6 +430,200 @@
   background: var(--brand-blue);
   color: var(--color-white);
 }
+/* Compact Form Overlay - No Scrolling */
+.form-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  animation: fadeIn 0.3s ease;
+}
+
+.form-overlay.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Compact Modal - Fits Without Scroll */
+.form-modal {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 450px;
+  max-height: none; /* Remove height restriction */
+  overflow: visible; /* No scroll */
+  box-shadow: 0 25px 80px -12px rgba(0, 0, 0, 0.5);
+  position: relative;
+  animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Close Button - Smaller */
+.close-focus {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.close-focus:hover {
+  background: #e5e7eb;
+  color: #374151;
+  transform: rotate(90deg);
+}
+
+/* Compact Form Card Inside Modal */
+.form-modal .form-card {
+  margin: 0;
+  padding: 20px 24px 24px 24px;
+  box-shadow: none;
+  border-radius: 16px;
+  max-width: 100%;
+}
+
+.form-modal .form-card h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  padding-right: 40px;
+  color: #1f2937;
+}
+
+.form-modal .form-card > p {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+/* Compact Form Groups */
+.form-modal .form-group {
+  margin-bottom: 12px;
+}
+
+.form-modal .form-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.form-modal .form-control {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+  transition: all 0.2s;
+}
+
+.form-modal .form-control:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Compact Textarea */
+.form-modal textarea.form-control {
+  min-height: 60px;
+  resize: none;
+}
+
+/* Compact Button */
+.form-modal .btn-primary {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+/* Alert Message Compact */
+.form-modal #formAlert {
+  padding: 10px 12px;
+  font-size: 13px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Mobile - Slightly tighter */
+@media (max-width: 480px) {
+  .form-overlay {
+    padding: 10px;
+  }
+  
+  .form-modal .form-card {
+    padding: 18px 20px 20px 20px;
+  }
+  
+  .form-modal .form-card h2 {
+    font-size: 18px;
+  }
+  
+  .close-focus {
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+  }
+}
+
+
+.newsletter-message {
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.newsletter-message.success {
+  color: #4CAF50;
+}
+
+.newsletter-message.error {
+  color: #ff4d4d;
+}
 
 /* ============================================
    SOCIAL ICONS

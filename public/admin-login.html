@@ -1,34 +1,147 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Login</title>
 <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  font-family: Arial;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: #f4f6f9;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
 }
+
 .box {
   background: white;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 400px;
+  animation: slideUp 0.5s ease;
 }
-input {
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h2 {
+  text-align: center;
+  color: #1f2d3d;
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+label {
   display: block;
-  width: 250px;
-  margin: 10px 0;
-  padding: 10px;
+  margin-bottom: 8px;
+  color: #555;
+  font-size: 14px;
+  font-weight: 500;
 }
+
+input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e1e8ed;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
 button {
   width: 100%;
-  padding: 10px;
-  background: #1f2d3d;
+  padding: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-top: 10px;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+#error {
+  color: #e74c3c;
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  min-height: 20px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  body {
+    padding: 15px;
+  }
+  
+  .box {
+    padding: 30px 20px;
+  }
+  
+  h2 {
+    font-size: 24px;
+  }
+  
+  input, button {
+    padding: 14px;
+  }
+}
+
+/* Loading spinner */
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255,255,255,.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 </style>
 </head>
@@ -36,41 +149,78 @@ button {
 <body>
 
 <div class="box">
-<h2>Admin Login</h2>
+  <h2>🔐 Admin Login</h2>
+  
+  <div class="input-group">
+    <label for="username">Username</label>
+    <input type="text" id="username" placeholder="Enter username" autocomplete="username">
+  </div>
+  
+  <div class="input-group">
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="Enter password" autocomplete="current-password">
+  </div>
 
-<input id="username" placeholder="Username">
-<input id="password" type="password" placeholder="Password">
+  <button onclick="login()" id="loginBtn">
+    <span class="btn-text">Login</span>
+  </button>
 
-<button onclick="login()">Login</button>
-
-<p id="error" style="color:red"></p>
+  <p id="error"></p>
 </div>
 
 <script>
-const API =
-  window.location.hostname === "localhost"
-    ? "http://localhost:5000"
-    : "https://gio26.onrender.com";  // ⭐ FIXED: Removed /api/admin/login and trailing space
+const API = window.location.hostname === "localhost"
+  ? "http://localhost:5000"
+  : "https://gio26.onrender.com";
 
 async function login() {
-  const username = document.getElementById("username").value;
+  const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value;
+  const errorEl = document.getElementById("error");
+  const btn = document.getElementById("loginBtn");
+  
+  // Clear previous error
+  errorEl.textContent = "";
+  
+  // Validation
+  if (!username || !password) {
+    errorEl.textContent = "Please enter both username and password";
+    return;
+  }
+  
+  // Show loading
+  btn.innerHTML = '<span class="loading"></span> Logging in...';
+  btn.disabled = true;
 
-  const res = await fetch(`${API}/api/auth/login`, {  // ⭐ CORRECT endpoint
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ username, password })
-  });
+  try {
+    const res = await fetch(`${API}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (res.ok) {
-    localStorage.setItem("adminToken", data.token);
-    window.location.href = "admin.html";
-  } else {
-    document.getElementById("error").innerText = data.message || "Login failed";
+    if (res.ok) {
+      localStorage.setItem("adminToken", data.token);
+      window.location.href = "admin.html";
+    } else {
+      errorEl.textContent = data.message || "Login failed";
+      btn.innerHTML = '<span class="btn-text">Login</span>';
+      btn.disabled = false;
+    }
+  } catch (error) {
+    console.error(error);
+    errorEl.textContent = "Network error. Please try again.";
+    btn.innerHTML = '<span class="btn-text">Login</span>';
+    btn.disabled = false;
   }
 }
+
+// Allow Enter key to submit
+document.getElementById("password").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") login();
+});
 </script>
 
 </body>
