@@ -181,3 +181,43 @@ function initScrollAnimations() {
   elements.forEach(el => observer.observe(el));
 }
 
+
+// Impact Statistics Counter Animation
+document.addEventListener('DOMContentLoaded', function() {
+  const statNumbers = document.querySelectorAll('.impact-stat-number');
+  
+  const animateCounter = (element, target) => {
+    let current = 0;
+    const increment = target / 60; // 60 frames for ~1 second animation
+    const duration = 1500; // 1.5 seconds
+    const stepTime = duration / 60;
+    
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        element.textContent = target.toLocaleString();
+        clearInterval(timer);
+      } else {
+        element.textContent = Math.floor(current).toLocaleString();
+      }
+    }, stepTime);
+  };
+
+  // Intersection Observer to trigger animation when section is visible
+  const observerOptions = {
+    threshold: 0.3,
+    rootMargin: '0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const target = parseInt(entry.target.getAttribute('data-count'));
+        animateCounter(entry.target, target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  statNumbers.forEach(stat => observer.observe(stat));
+});

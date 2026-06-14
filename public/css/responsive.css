@@ -73,7 +73,7 @@
   
   /* Hero Section */
   .hero-section {
-    min-height: 570px;
+    min-height: 620px;
     height: auto;
     padding: calc(var(--navbar-height) + var(--space-12)) 0 var(--space-12);
   }

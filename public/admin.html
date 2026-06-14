@@ -113,8 +113,18 @@ button {
     display: block;
   }
   
+  /* Add horizontal scroll for tables on small screens */
+  .container {
+    overflow-x: auto;
+  }
+  
   table {
-    display: none;
+    font-size: 12px;  /* Smaller text on mobile */
+    min-width: 600px; /* Force scroll if needed */
+  }
+  
+  th, td {
+    padding: 8px;  /* Tighter padding */
   }
 }
 
@@ -150,11 +160,11 @@ button {
 
 <header>
   📬 Sponsors Contact Messages Dashboard
+  <button onclick="logout()" style="float:right; background:#e74c3c; color:white; padding:8px 16px; border:none; border-radius:4px; cursor:pointer;">Logout</button>
 </header>
 
 <div class="container">
 <h2>All Submissions</h2>
-<button onclick="logout()" style="float:right; background:#e74c3c; color:white; padding:8px 16px; border:none; border-radius:4px; cursor:pointer;">Logout</button>
 
   <div id="loading" class="loading">Loading messages...</div>
 
@@ -180,7 +190,7 @@ button {
     <tr>
       <th>Email</th>
       <th>Date Subscribed</th>
-      <th>Action/th>
+      <th>Action </th>
     </tr>
   </thead>
 
@@ -347,6 +357,30 @@ async function loadSubscribers() {
     console.error("Failed to load subscribers:", error);
     tableBody.innerHTML = `<tr><td colspan='3' style="color:#e74c3c;">Error loading subscribers</td></tr>`;
   }
+
+  function renderMobileCards(subscribers) {
+  const container = document.getElementById("mobileCards");
+  container.innerHTML = "";
+  
+  if (subscribers.length === 0) {
+    container.innerHTML = "<p>No subscribers</p>";
+    return;
+  }
+  
+  subscribers.forEach(sub => {
+    const card = document.createElement("div");
+    card.className = "mobile-card";
+    card.innerHTML = `
+      <div class="card-row"><strong>Email:</strong> ${escapeHtml(sub.email)}</div>
+      <div class="card-row"><strong>Date:</strong> ${new Date(sub.subscribedAt).toLocaleString()}</div>
+      <button class="delete-btn" onclick="deleteSubscriber('${sub._id}')">Delete</button>
+    `;
+    container.appendChild(card);
+  });
+}
+// After rendering table
+renderMobileCards(data);
+
 }
 
 // ⭐ ADD THIS DELETE FUNCTION
