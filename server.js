@@ -24,6 +24,21 @@ app.use(cors({ origin: "*" }));
 // ⭐ Load email config ONCE (self-initializes)
 const transporter = require("./config/email");
 
+app.use("/api/newsletter", subscriberRoutes);
+// Routes
+app.use('/api/admin', adminRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/contact", contactRoutes);
+
+// Static files
+app.use(express.static(path.join(__dirname, "public")));
+
+// SPA fallback
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api")) return next();
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
 // Debug routes
 app.get("/api/debug", (req, res) => {
   res.json({
@@ -53,21 +68,6 @@ app.get("/api/test-email", async (req, res) => {
   }
 });
 
-
-app.use("/api/newsletter", subscriberRoutes);
-// Routes
-app.use('/api/admin', adminRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/contact", contactRoutes);
-
-// Static files
-app.use(express.static(path.join(__dirname, "public")));
-
-// SPA fallback
-app.use((req, res, next) => {
-  if (req.path.startsWith("/api")) return next();
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
 
 // Health check
 app.get("/", (req, res) => {
